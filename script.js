@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const cookies = document.cookie.split("; ");
         for (let cookie of cookies) {
             let [key, value] = cookie.split("=");
-            if (key === name) return JSON.parse(decodeURIComponent(value));
+            if (key === name) return decodeURIComponent(value);
         }
         return null;
     }
@@ -28,22 +28,29 @@ document.addEventListener("DOMContentLoaded", function () {
         let fontColor = fontColorInput.value;
         let fontSize = fontSizeInput.value;
 
-        let data = { color: fontColor, fontsize: fontSize };
-        setCookie("style", JSON.stringify(data), 365);
+        setCookie("fontcolor", fontColor, 365);
+        setCookie("fontsize", fontSize, 365);
 
-        applyStyles(data);
+        applyStyles();
     }
 
-    function applyStyles(data) {
-        document.body.style.color = data.color;
-        document.body.style.fontSize = `${data.fontsize}px`;
-        fontColorInput.value = data.color;
-        fontSizeInput.value = data.fontsize;
+    function applyStyles() {
+        let fontColor = getCookie("fontcolor");
+        let fontSize = getCookie("fontsize");
+
+        if (fontColor) {
+            document.body.style.color = fontColor;
+            fontColorInput.value = fontColor;
+        }
+
+        if (fontSize) {
+            document.body.style.fontSize = `${fontSize}px`;
+            fontSizeInput.value = fontSize;
+        }
     }
 
-    // Load and apply saved styles
-    let savedData = getCookie("style");
-    if (savedData) applyStyles(savedData);
+    // Apply stored preferences on page load
+    applyStyles();
 
     // Attach event listener to form
     document.querySelector("form").addEventListener("submit", customize);
